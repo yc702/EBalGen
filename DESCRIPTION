@@ -1,0 +1,29 @@
+Package: EBalGen
+Type: Package
+Title: Entropy Balancing for Causal Generalization
+Version: 0.1.0
+Authors@R: person("Yi", "Chen", , "ychen839@outlook.com", role = c("aut", "cre", "cph"),
+           comment = c(ORCID = "0000-0001-8697-9069"))
+Maintainer: The package maintainer <ychen839@outlook.com>
+Description: Implement exact and approximate balancing methods for causal generalization 
+  based on the work of Chen, Chen and Yu (2023) and Chen, Chen and Yu (2025+). 
+  The key idea is that for causal generalization, differences in the distributions of 
+  treatment effect modifiers  between these populations, known as covariate shift, 
+  can lead to varying ATEs. Our methods use only summary-level information from a target 
+  sample while accounting for the possible covariate shifts.
+License: MIT + file LICENSE
+Encoding: UTF-8
+LazyData: true
+Suggests: 
+    CVXR (>= 1.0-12),
+    testthat (>= 3.0.0)
+Config/testthat/edition: 3
+Imports: 
+    doParallel (>= 1.0.17),
+    doRNG (>= 1.8.6),
+    dplyr (>= 1.1.4),
+    MASS (>= 7.3-60.2),
+    resample (>= 0.6),
+    parallel (>= 4.4.0),
+    foreach (>= 1.5.2)
+RoxygenNote: 7.3.2
