@@ -98,9 +98,20 @@ ebal_wts <- function(x, trt,H_vars,
     lambda1 <- theta[(0:K_h)[-1]]
     lambda0 <- theta[K_h + (0:K_h)[-1]]
     gamma <- theta[2 * K_h + (0:K_g)[-1]]
-    list(lambda1 = lambda1, lambda0 = lambda0, gamma = gamma,
-         w1 = drop(exp(H1 %*% lambda1 + G1 %*% gamma - 1)),
-         w0 = drop(exp(H0 %*% lambda0 - G0 %*% gamma - 1)))
+    if (K_g==0){
+      list(lambda1 = lambda1, lambda0 = lambda0, gamma = gamma,
+           w1 = drop(exp(H1 %*% lambda1  - 1)),
+           w0 = drop(exp(H0 %*% lambda0  - 1)))
+    } else if (K_h==0){
+      list(lambda1 = lambda1, lambda0 = lambda0, gamma = gamma,
+           w1 = drop(exp( G1 %*% gamma - 1)),
+           w0 = drop(exp(G0 %*% gamma - 1)))
+    } else {
+      list(lambda1 = lambda1, lambda0 = lambda0, gamma = gamma,
+           w1 = drop(exp(H1 %*% lambda1 + G1 %*% gamma - 1)),
+           w0 = drop(exp(H0 %*% lambda0 - G0 %*% gamma - 1)))
+    }
+
   }
 
   ## Dual optimization problem
@@ -121,7 +132,10 @@ ebal_wts <- function(x, trt,H_vars,
     }
 
     # Optimization is done with the built-in optim function
-    opt <- optim(rep(0, 2 * K_h + K_g), fn = dual_fn, gr = dual_grad, method = "BFGS",control = list(maxit=1000))
+    opt <- optim(rep(0, 2 * K_h + K_g), fn = dual_fn, gr = dual_grad, method = "BFGS",
+                 control = list(trace = 0,
+                                reltol = 1e-10,
+                                maxit = 1e4))
 
     # Output weights and dual parameters
     args <- primal_dual_args(opt$par)
@@ -257,7 +271,10 @@ ebal_wts_simple <- function(x,target_moments = NULL,
     dual_grad <- function(lambda) colMeans(primal_w(lambda) * x) - target_moments
 
     # Optimization is done with the built-in optim function
-    opt <- optim(rep(0, NCOL(x)), fn = dual_fn, gr = dual_grad, method = "BFGS",control = list(maxit=1000))
+    opt <- optim(rep(0, NCOL(x)), fn = dual_fn, gr = dual_grad, method = "BFGS",
+                 control = list(trace = 0,
+                                reltol = 1e-10,
+                                maxit = 1e4))
 
     if (round(sum(primal_w(opt$par)))!=n | opt$convergence!=0){
       stop("Error: there is no solution for this exact balancing")

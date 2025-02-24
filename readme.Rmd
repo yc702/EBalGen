@@ -14,10 +14,14 @@ knitr::opts_chunk$set(
 
 )
 library(halfmoon)
+library(forcats)
 library(ggplot2)
 library(doParallel)
 library(doRNG)
 library(resample)
+library(cobalt)
+library(EBalGen)
+library(dplyr)
 source("simu_make_data_readme.R")
 
 # If you need to have the files run in a certain order, you can use the Collate field in the DESCRIPTION file.
@@ -29,19 +33,32 @@ source("simu_make_data_readme.R")
 
 ## Overview
 
-### Overview and introduction
+<!-- badges: start -->
+[![R-CMD-check](https://github.com/yc702/EBalGen/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/yc702/EBalGen/actions/workflows/R-CMD-check.yaml)
+<!-- badges: end -->
+  
+### Introduction
 
-The R package *EBalGen* provides tools for implementing exact and approximate balancing methods for causal generalization based on the work of Chen, Chen and Yu (2023) and Chen, Chen and Yu (2025+). The key idea is that for causal generalization, differences in the distributions of treatment effect modifiers  between these populations, known as covariate shift, can lead to varying ATEs. Our methods use only summary-level information from a target sample while accounting for the possible covariate shifts.
+The R package *EBalGen* provides tools for implementing exact and approximate balancing methods for causal generalization based on the work of Chen, Chen and Yu (2023) and Chen, Chen and Yu (2025+). The key
+idea is that for causal generalization, differences in the distributions
+of treatment effect modifiers between these populations, known as
+covariate shift, can lead to varying ATEs. We introduced a weighting method to 
+estimate the target ATE and CI use only summary-level information from a target sample 
+while accounting for the possible covariate shifts.
 
 ### Key Functionalities
 
 *EBalGen* provides the following functionalities:
 
- - Weight: Computes both exact and approximate balancing weights to account for covariate differences between the source and target populations and within source population.
+- Weight: Compute both exact and approximate balancing weights to
+  account for covariate differences between the source and target
+  populations and within source population.
 
- - ATE: Estimates the average treatment effect (ATE) using the computed weights.
+- ATE: Estimate the average treatment effect (ATE) using the computed
+  weights.
 
- - Confidence Interval (CI): Constructs confidence intervals for the estimated ATE using resampling-based perturbation method (RPM).
+- Confidence Interval (CI): Construct CI for the
+  estimated ATE using resampling-based perturbation method (RPM).
 
 
 
@@ -64,14 +81,26 @@ library(EBalGen)
 
 ### Data Set up
 
-We set the total sample size $n = n_s +n_t= 800$ and is split into source $n_s = 401$ and target $n_t = 399$ samples. We generate 5 covariates $X = (X_1, \ldots, X_5)$ from a uniform distribution $U(-2, 2)$. The source/target participation probability $\rho (x)$ follows $\text{logit} \{ \rho (x) \} = 0.4x_1+ 0.3x_2-0.2x_4$. That is, there is shift in the distribution of $(X_1, X_2, X_4)$. 
+We set the total sample size $n = n_s +n_t= 800$ which is split into
+source $n_s = 401$ and target $n_t = 399$ samples. We generate 5
+covariates $X = (X_1, \ldots, X_5)$ from a uniform distribution
+$U(-2, 2)$. The source/target participation probability $\rho (x)$
+follows $\text{logit} \{ \rho (x) \} = 0.4x_1+ 0.3x_2-0.2x_4$. That is,
+there is shift in the distribution of $(X_1, X_2, X_4)$.
 
-Propensity score $(\pi(x))$ model, we assume when the treatment assignment is related to $H$ linearly with $\text{logit}\{\pi(x)\} = 0.7x_2 + 0.5 x_3$. In this case, all the confounders are included in $H$, and it is enough that we only balance on $H$ to account for confounding. 
+Propensity score $(\pi(x))$ model: we assume the treatment
+assignment is related to $H$ linearly with
+$\text{logit}\{\pi(x)\} = 0.7x_2 + 0.5 x_3$. In this case, all the
+confounders are included in $H$, and it is enough that we only balance
+on $H$ to account for confounding.
 
-Outcome model, we assume $Y_i = m(X_i) + (A_i-0.5) \tau(X_i) + \epsilon_i$ with $\epsilon_i \overset{\text{i.i.d}}{\sim} N(0,1)$.
+Outcome model: we assume
+$Y_i = m(X_i) + (A_i-0.5) \tau(X_i) + \epsilon_i$ with
+$\epsilon_i \overset{\text{i.i.d}}{\sim} N(0,1)$.
 
-CATE function we assume $\tau(x) = x_1 - 0.6x_2 - 0.4 x_3 $. For the main effect $m(x)$, it has the form of $m(x) = 0.5x_1 + 0.3x_2 +0.3x_3 - 0.4  x_4 - 0.7 x_5$.
-
+CATE function: we assume \$(x) = x_1 - 0.6x_2 - 0.4 x_3 \$. For the main
+effect $m(x)$, it has the form of
+$m(x) = 0.5x_1 + 0.3x_2 +0.3x_3 - 0.4 x_4 - 0.7 x_5$.
 
 
 ```{r echo=FALSE}
@@ -98,14 +127,14 @@ on.exit(stopCluster(cl))
 
 ```
 
-In this setting, the Average treatment effect for target (ATET) is `r round(mean(ATET),2)`
+In this setting, the Average treatment effect for target (ATET) is `r round(mean(ATET),3)`
 
 
 
 
-### Visual check of the propensity scores between source and target samples
+### Propensity scores distribution between source and target samples
 
-Here is the density plot of the propensity scores of source and target samples fitted using simple logistic regression using all 5 covariates. The distribution of propensity scores in both populations shows a substantial degree of overlap, indicating that the covariate distributions between the two samples are sufficiently similar. This overlap suggests that the generalization of treatment effects from the source population to the target population is more reliable and exact balancing could be achieved. 
+The plot here visually checks the propensity scores of source and target samples fitted using simple logistic regression using all 5 covariates. The distribution of propensity scores in both populations shows a substantial degree of overlap, indicating that the covariate distributions between the two samples are sufficiently similar. This overlap suggests that the generalization of treatment effects from the source population to the target population is more reliable and exact balancing could be achieved. 
 
 ```{r echo=FALSE}
 dat <- make_data(n, p, setting_x = setting_x,
@@ -139,10 +168,35 @@ ggplot(full_sample, aes(ps, fill = Sample, group = Sample))  +
 
 ```
 
+Additionally, we show the standardized mean difference (SMD) plot. 
+
+```{r echo=FALSE}
+#Nearest neighbor matching with MatchIt
+m.out <- MatchIt::matchit(Source ~ .,
+                          data = full_sample)
+
+#Checking balance before and after matching:
+obs_balance = bal.tab(m.out, thresholds = c(m = .1), un = TRUE, 
+          drop.distance = TRUE)$Balance
+obs_balance$var <- rownames(obs_balance)
+obs_balance <- obs_balance %>% 
+  select(var, type = Type, smd = Diff.Un) %>%
+  as_tibble() %>%
+  mutate(data = "Unweighted")
+ggplot(obs_balance[-c(1,8),], aes(x = smd, y = fct_reorder(var, smd))) +
+  geom_point() +
+  geom_vline(xintercept = .10) +
+  geom_vline(xintercept = -.10)+
+  labs(x = "\nAbsolute Standardized Difference", y = "", shape = "") +
+  theme_bw() +
+  theme(legend.position = "bottom",
+        panel.grid.minor = element_blank())
+```
+
 
 ### Compute exact balancing weights and generalized ATE
 
-For causal generalization, assume in the target sample we only have summary-level information of $X_1, X_2,$ and $X_3$. We set $H(x) = (1, x_1, x_2, x_3)$ and $G(x) = (x_4, x_5)$. We consider balancing on the first moments of $X_1, X_2,$ and $X_3$.
+For causal generalization, assume in the target sample we only have summary-level information of $X_1, X_2,$ and $X_3$ to be balanced. We set $H(x) = (1, x_1, x_2, x_3)$ and $G(x) = (x_4, x_5)$. 
 
 
 **Data input:**
@@ -158,7 +212,7 @@ For causal generalization, assume in the target sample we only have summary-leve
  need to be balanced between source and target samples. Here we balance on 1,2,3 covariates.
  
  - `target_moments`A vector of first moments of the target sample covariates 
- that needs to be balanced between source and target. Here the values are `r target_moments`.
+ that needs to be balanced between source and target. Here the values are `r round(target_moments,3)`.
  
  - `delta` A vector specifying the approximate balancing tolerance margin. Here the values are
  (`r numeric(8)`). For the delta's length of 8, it is balancing between source and
@@ -176,7 +230,7 @@ summary(wts_gen)
 
 ```
 
-Here is the generalized ATE of source sample on the target sample
+Here is the generalized target ATE.
 
 ```{r echo=TRUE}
 
@@ -212,7 +266,7 @@ ATE_CI$ub_ATE
 
 ### Data Set up
 
-We set the total sample size $n = n_s +n_t= 400$ and is split into source $n_s = 281$ and target $n_t = 119$ samples.  We generate 5 covariates $X = (X_1, \ldots, X_5)$ from a uniform distribution $U(-2, 6)$. The remaining settings are identical to those in the previous example.
+We set the total sample size $n = n_s +n_t= 400$ which is split into source $n_s = 281$ and target $n_t = 119$ samples.  We generate 5 covariates $X = (X_1, \ldots, X_5)$ from a uniform distribution $U(-2, 6)$. The remaining settings are identical to those in the previous example.
 
 
 ```{r echo=FALSE}
@@ -233,12 +287,12 @@ ATET <- foreach(1:2000, .combine = "mean",.packages = c("dplyr","MASS","resample
 on.exit(stopCluster(cl))
 ```
 
-In this setting, the Average treatment effect for target (ATET) is `r round(mean(ATET),2)`
+In this setting, the Average treatment effect for target (ATET) is `r round(mean(ATET),3)`
 
 
-### Visual check of the propensity scores between source and target samples
+### Propensity scores distribution between source and target samples
 
-Here is the density plot of the propensity scores of source and target samples fitted using simple logistic regression using all 5 covariates. The distribution of propensity scores in both populations shows a limited degree of overlap, indicating that the covariate distributions between the two samples are quite different. This overlap suggests that approximate balancing should be used. 
+The plot here visually checks the propensity scores of source and target samples fitted using simple logistic regression using all 5 covariates. The distribution of propensity scores in both populations shows a limited degree of overlap, indicating that the covariate distributions between the two samples are quite different. This overlap suggests that approximate balancing should be used. 
 
 ```{r echo=FALSE}
 dat <- make_data(n, p, setting_x = setting_x,
@@ -249,7 +303,6 @@ xs <- dat$x[dat$s == 1,]
 xt <- dat$x[dat$s != 1,]
 trts <- dat$trt[dat$s == 1]
 ys <- dat$y[dat$s == 1]
-delta = numeric(length(H_vars)+ncol(xs))+0.1
 target_moments = colMeans(xt)[H_vars]
 ## visual check
 # test_s_1 <- dat$x[dat$s==1 & dat$trt==1,]
@@ -272,6 +325,33 @@ ggplot(full_sample, aes(ps, fill = Sample, group = Sample))  +
 
 ```
 
+Additionally, we show the SMD plot. We can see that the SMD is much larger than in the case previously.
+
+```{r echo=FALSE}
+#Nearest neighbor matching with MatchIt
+m.out <- MatchIt::matchit(Source ~ .,
+                          data = full_sample,
+                  method = NULL)
+var = rownames(summary(m.out)[3]$sum.all)
+smd = summary(m.out)[3]$sum.all[,3]
+obs_balance = data.frame(var,smd,data = "Unweighted")
+#Checking balance before and after matching:
+# obs_balance = bal.tab(m.out, thresholds = c(m = .1), un = TRUE, 
+#           drop.distance = TRUE)$Balance
+# obs_balance$var <- rownames(obs_balance)
+# obs_balance <- obs_balance %>% 
+#   select(var, type = Type, smd = Diff.Un) %>%
+#   as_tibble() %>%
+#   mutate(data = "Unweighted")
+ggplot(obs_balance[-c(1,8,9),], aes(x = smd, y = fct_reorder(var, smd))) +
+  geom_point() +
+  geom_vline(xintercept = .10) +
+  geom_vline(xintercept = -.10)+
+  labs(x = "\nAbsolute Standardized Difference", y = "", shape = "") +
+  theme_bw() +
+  theme(legend.position = "bottom",
+        panel.grid.minor = element_blank())
+```
 
 ### Compute exact balancing weights and generalized ATE
 
@@ -291,7 +371,7 @@ summary(wts_gen)
 
 ```
 
-Here is the generalized ATE of source sample on the target sample
+Here is the generalized target ATE.
 
 ```{r echo=TRUE}
 
@@ -319,5 +399,12 @@ ATE_CI$ub_ATE
 ## Number of simulations that uses exact balancing over 300
 ATE_CI$use_exact
 ```
+
+## Reference
+
+ - Chen, R., Chen, G., and Yu, M. (2023). Entropy balancing for causal generalization with
+target sample summary information. Biometrics 79, 3179–3190.
+
+ - Chen, Y., Chen, G., and Yu, M. (2025+). Confidence Interval Construction for Causally Generalized Estimates with Target Sample Summary Information.
 
 

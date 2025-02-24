@@ -78,7 +78,7 @@ delta = numeric(8)+0.1
 if (requireNamespace(c("dplyr","doRNG","MASS","resample","doParallel"),
   quietly = TRUE)) {
 
-  RPM_AB_delta(x,y,trt,H_vars, target_mean, target_sd, num_sim=500,
+  RPM_AB_delta(x,y,trt,H_vars, target_mean, target_sd, num_sim=50,
   H_add_intercept = TRUE,delta,cluster=1, set_seed=111)
 
 }
