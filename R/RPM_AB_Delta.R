@@ -1,10 +1,10 @@
-#' Confidence interval for approximate balancing
+#' @title Confidence interval for approximate balancing
 #' @description Compute the approximate balancing confidence interval (CI)
 #' using resampling-based perturbation method proposed in the paper.
 #' @param x A covariate data matrix for the source sample.
 #' @param y A vector of the source sample response values.
 #' @param trt A vector of 0, 1 or FALSE/TRUE of treatment assignment for the source sample.
-#' @param H_vars A vector of numbers specifying which covariate in `x`
+#' @param H_vars A vector of numbers indexing which covariate in \code{x}
 #' need to be balanced between source and target samples.
 #' @param target_mean A vector of mean of the target sample covariates
 #' that needs to be balanced between source and target.
@@ -24,8 +24,8 @@
 #'  \item{n_success}{The number of feasible solutions in `num_sim` bootstrap.}
 #' }
 #' @references
-#' Chen, R., Chen, G., & Yu, M. (2023). Entropy balancing for causal
-#' generalization with target sample summary information. Biometrics, 79(4)
+#' Chen, Y., Chen, G., & Yu, M. (2025+). Confidence interval construction for
+#' causally generalized estimators with summary-level target data.
 #' @examples
 #' library(EBalGen)
 #' set.seed(1)
@@ -36,7 +36,7 @@
 #' y = rnorm(n*p)
 #' trt = rbinom(n,1,0.5)
 #' H_vars = c(1,2,3)
-#' target_mean = c(0,0,0)
+#' target_mean = c(2,2,2)
 #' target_sd=c(1,1,1)
 #' if (requireNamespace(c("dplyr","doRNG","MASS","resample","doParallel"),
 #'   quietly = TRUE)) {
@@ -45,6 +45,7 @@
 #'   H_add_intercept = TRUE,cluster=1, set_seed=111)
 #'
 #' }
+#' @rdname RPM_AB
 #' @export
 #' @import dplyr
 #' @import doRNG
@@ -53,7 +54,6 @@
 #' @import doParallel
 #' @import parallel
 #' @import foreach
-#' @rdname RPM_AB
 RPM_AB <- function(x,y,trt,H_vars,target_mean,
                    target_sd,num_sim,
                    H_add_intercept=TRUE,
@@ -161,13 +161,13 @@ RPM_AB <- function(x,y,trt,H_vars,target_mean,
 
 
 
-#' Confidence interval for approximate balancing for a specified margin
+#' @title Confidence interval for approximate balancing for a specified margin
 #' @description Compute the approximate balancing confidence interval (CI) for a specified margin
 #' using resampling-based perturbation method proposed in the paper.
 #' @param x A covariate data matrix for the source sample.
 #' @param y Logical vector of treatment assignment for the source sample.
 #' @param trt A vector of 0, 1 or FALSE/TRUE of treatment assignment for the source sample.
-#' @param H_vars A vector of numbers specifying which covariate in `x`
+#' @param H_vars A vector of numbers indexing which covariate in \code{x}
 #' need to be balanced between source and target samples.
 #' @param target_mean A vector of mean of the target sample covariates
 #' that needs to be balanced between source and target.
@@ -177,9 +177,9 @@ RPM_AB <- function(x,y,trt,H_vars,target_mean,
 #' @param H_add_intercept `logical` whether to include 1 as intercept in
 #' H covariates, default as TRUE.
 #' @param delta A vector specifying the approximate balancing tolerance margin.
-#' The vector has a total length of $2H+G$, where $H$ represents the number of
+#' The vector has a total length of 2H+G, where H represents the number of
 #' covariates balanced between the source (treatment and control) and the
-#' target moments, and $G$ represents the covariates balanced solely between
+#' target moments, and G represents the covariates balanced solely between
 #' the source treatment and control groups. If exact balancing, delta are all zeros.
 #' @param cluster Number of parallel running CPU cores, Default: 1
 #' @param set_seed Random seed for simulation, Default: 111
@@ -190,11 +190,10 @@ RPM_AB <- function(x,y,trt,H_vars,target_mean,
 #'  \item{ub_ATE}{The upper bound of 95\% CI.}
 #'  \item{n_success}{The number of feasible solutions in `num_sim` bootstrap.}
 #' }
-#' @export
 #'
 #' @references
-#' Chen, R., Chen, G., & Yu, M. (2023). Entropy balancing for causal
-#' generalization with target sample summary information. Biometrics, 79(4)
+#' Chen, Y., Chen, G., & Yu, M. (2025+). Confidence interval construction for
+#' causally generalized estimators with summary-level target data.
 #' @examples
 #' library(EBalGen)
 #' set.seed(1)
@@ -215,6 +214,8 @@ RPM_AB <- function(x,y,trt,H_vars,target_mean,
 #'   H_add_intercept = TRUE,delta,cluster=1, set_seed=111)
 #'
 #' }
+#' @rdname RPM_AB_delta
+#' @export
 #' @import dplyr
 #' @import doRNG
 #' @import MASS
@@ -222,7 +223,6 @@ RPM_AB <- function(x,y,trt,H_vars,target_mean,
 #' @import doParallel
 #' @import parallel
 #' @import foreach
-#' @rdname RPM_AB_delta
 RPM_AB_delta <- function(x,y,trt,H_vars,target_mean,
                          target_sd,num_sim,
                          H_add_intercept=TRUE,delta,

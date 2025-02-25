@@ -1,11 +1,12 @@
 
 # EBalGen: Entropy balancing for covariate shift causal generalization
 
+## Overview
+
 <!-- badges: start -->
+
 [![R-CMD-check](https://github.com/yc702/EBalGen/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/yc702/EBalGen/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
-
-## Overview
 
 ### Introduction
 
@@ -53,26 +54,28 @@ library(EBalGen)
 
 ### Data Set up
 
-We set the total sample size $n = n_s +n_t= 800$ which is split into
-source $n_s = 401$ and target $n_t = 399$ samples. We generate 5
-covariates $X = (X_1, \ldots, X_5)$ from a uniform distribution
-$U(-2, 2)$. The source/target participation probability $\rho (x)$
-follows $\text{logit} \{ \rho (x) \} = 0.4x_1+ 0.3x_2-0.2x_4$. That is,
-there is shift in the distribution of $(X_1, X_2, X_4)$.
+- We set the total sample size $n = n_s +n_t= 800$ which is split into
+  source $n_s = 401$ and target $n_t = 399$ samples. We generate 5
+  covariates $X = (X_1, \ldots, X_5)$ from a uniform distribution
+  $U(-2, 2)$.
 
-Propensity score $(\pi(x))$ model: we assume the treatment assignment is
-related to $H$ linearly with
-$\text{logit}\{\pi(x)\} = 0.7x_2 + 0.5 x_3$. In this case, all the
-confounders are included in $H$, and it is enough that we only balance
-on $H$ to account for confounding.
+- The source/target participation probability $\rho (x)$: it follows
+  $\text{logit} \{ \rho (x) \} = 0.4x_1+ 0.3x_2-0.2x_4$. That is, there
+  is shift in the distribution of $(X_1, X_2, X_4)$.
 
-Outcome model: we assume
-$Y_i = m(X_i) + (A_i-0.5) \tau(X_i) + \epsilon_i$ with
-$\epsilon_i \overset{\text{i.i.d}}{\sim} N(0,1)$.
+- Propensity score $(\pi(x))$ model: we assume the treatment assignment
+  is related to $H$ linearly with
+  $\text{logit}\{\pi(x)\} = 0.7x_2 + 0.5 x_3$. In this case, all the
+  confounders are included in $H$, and it is enough that we only balance
+  on $H$ to account for confounding.
 
-CATE function: we assume \$(x) = x_1 - 0.6x_2 - 0.4 x_3 \$. For the main
-effect $m(x)$, it has the form of
-$m(x) = 0.5x_1 + 0.3x_2 +0.3x_3 - 0.4 x_4 - 0.7 x_5$.
+- Outcome model: we assume
+  $Y_i = m(X_i) + (A_i-0.5) \tau(X_i) + \epsilon_i$ with
+  $\epsilon_i \overset{\text{i.i.d}}{\sim} N(0,1)$.
+
+- CATE function: we assume \$(x) = x_1 - 0.6x_2 - 0.4 x_3 \$. For the
+  main effect $m(x)$, it has the form of
+  $m(x) = 0.5x_1 + 0.3x_2 +0.3x_3 - 0.4 x_4 - 0.7 x_5$.
 
 In this setting, the Average treatment effect for target (ATET) is
 -0.138
@@ -110,13 +113,13 @@ set $H(x) = (1, x_1, x_2, x_3)$ and $G(x) = (x_4, x_5)$.
 - `trts` A vector of 0, 1 or TRUE/FALSE of treatment assignment for the
   source sample.
 
-- `H_vars` A vector of numbers specifying which covariate in the source
+- `H_vars` A vector of numbers indexing which covariate in the source
   sample need to be balanced between source and target samples. Here we
   balance on 1,2,3 covariates.
 
 - `target_moments`A vector of first moments of the target sample
   covariates that needs to be balanced between source and target. Here
-  the values are -0.239, -0.187, -0.058.
+  the values are -0.277, -0.139, -0.119.
 
 - `delta` A vector specifying the approximate balancing tolerance
   margin. Here the values are (0, 0, 0, 0, 0, 0, 0, 0). For the delta’s
@@ -132,7 +135,7 @@ library(EBalGen)
 wts_gen <- ebal_wts(xs, trts,H_vars, target_moments,H_add_intercept = TRUE,delta )$w
 summary(wts_gen)
 #>    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-#>  0.2741  0.9978  1.5188  2.0000  2.6777 11.5155
+#>  0.2415  1.0163  1.5952  2.0000  2.5774 14.0762
 ```
 
 Here is the generalized target ATE.
@@ -141,7 +144,7 @@ Here is the generalized target ATE.
 
 ebal_ATE(xs,ys,trts,H_vars, target_moments, H_add_intercept=TRUE,delta)$ATE
 #>      value 
-#> -0.1051612
+#> 0.02294481
 ```
 
 ### Compute exact balancing CI
@@ -162,12 +165,12 @@ ATE_CI = RPM_CI(xs, ys,trts, H_vars=H_vars,target_mean=target_moments,
 ## Lower bound of 95% CI
 ATE_CI$lb_ATE
 #>      2.5% 
-#> -2.060062
+#> -2.130664
 
 ## Upper bound of 95% CI
 ATE_CI$ub_ATE
 #>    97.5% 
-#> 1.917952
+#> 2.310287
 ```
 
 ------------------------------------------------------------------------
@@ -218,7 +221,7 @@ wts_gen <- ebal_wts(xs, trts,H_vars, target_moments,H_add_intercept = TRUE,
                     delta=numeric(8)+0.1 )$w
 summary(wts_gen)
 #>     Min.  1st Qu.   Median     Mean  3rd Qu.     Max. 
-#>  0.00104  0.17267  0.47180  2.00001  1.42941 76.36493
+#>  0.04555  0.33305  0.75514  2.00001  1.85307 93.90129
 ```
 
 Here is the generalized target ATE.
@@ -227,8 +230,8 @@ Here is the generalized target ATE.
 
 ebal_ATE(xs,ys,trts,H_vars, target_moments, H_add_intercept=TRUE,
          delta=numeric(8)+0.1)$ATE
-#>      value 
-#> -0.6982687
+#>     value 
+#> -1.046427
 ```
 
 ### Compute approximate balancing confidence interval
@@ -244,16 +247,16 @@ ATE_CI = RPM_AB(xs, ys,trts, H_vars=H_vars,target_mean=target_moments,target_sd=
 ## Lower bound of 95% CI
 ATE_CI$lb_ATE
 #>      2.5% 
-#> -2.456376
+#> -2.807896
 
 ## Upper bound of 95% CI
 ATE_CI$ub_ATE
 #>   97.5% 
-#> 3.74397
+#> 4.54158
 
 ## Number of simulations that uses exact balancing over 300
 ATE_CI$use_exact
-#> [1] 64
+#> [1] 67
 ```
 
 ## Reference

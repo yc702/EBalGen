@@ -39,9 +39,10 @@ source("simu_make_data_readme.R")
   
 ### Introduction
 
-The R package *EBalGen* provides tools for implementing exact and approximate balancing methods for causal generalization based on the work of Chen, Chen and Yu (2023) and Chen, Chen and Yu (2025+). The key
-idea is that for causal generalization, differences in the distributions
-of treatment effect modifiers between these populations, known as
+The R package *EBalGen* provides tools for implementing exact and approximate balancing 
+methods for causal generalization based on the work of Chen, Chen and Yu (2023) 
+and Chen, Chen and Yu (2025+). The key idea is that for causal generalization, 
+differences in the distributions of treatment effect modifiers between these populations, known as
 covariate shift, can lead to varying ATEs. We introduced a weighting method to 
 estimate the target ATE and CI use only summary-level information from a target sample 
 while accounting for the possible covariate shifts.
@@ -81,24 +82,26 @@ library(EBalGen)
 
 ### Data Set up
 
-We set the total sample size $n = n_s +n_t= 800$ which is split into
+ - We set the total sample size $n = n_s +n_t= 800$ which is split into
 source $n_s = 401$ and target $n_t = 399$ samples. We generate 5
 covariates $X = (X_1, \ldots, X_5)$ from a uniform distribution
-$U(-2, 2)$. The source/target participation probability $\rho (x)$
-follows $\text{logit} \{ \rho (x) \} = 0.4x_1+ 0.3x_2-0.2x_4$. That is,
+$U(-2, 2)$. 
+
+ - The source/target participation probability $\rho (x)$:
+it follows $\text{logit} \{ \rho (x) \} = 0.4x_1+ 0.3x_2-0.2x_4$. That is,
 there is shift in the distribution of $(X_1, X_2, X_4)$.
 
-Propensity score $(\pi(x))$ model: we assume the treatment
+ - Propensity score $(\pi(x))$ model: we assume the treatment
 assignment is related to $H$ linearly with
 $\text{logit}\{\pi(x)\} = 0.7x_2 + 0.5 x_3$. In this case, all the
 confounders are included in $H$, and it is enough that we only balance
 on $H$ to account for confounding.
 
-Outcome model: we assume
+ - Outcome model: we assume
 $Y_i = m(X_i) + (A_i-0.5) \tau(X_i) + \epsilon_i$ with
 $\epsilon_i \overset{\text{i.i.d}}{\sim} N(0,1)$.
 
-CATE function: we assume \$(x) = x_1 - 0.6x_2 - 0.4 x_3 \$. For the main
+ - CATE function: we assume \$(x) = x_1 - 0.6x_2 - 0.4 x_3 \$. For the main
 effect $m(x)$, it has the form of
 $m(x) = 0.5x_1 + 0.3x_2 +0.3x_3 - 0.4 x_4 - 0.7 x_5$.
 
@@ -118,7 +121,7 @@ err_sd =1
 set.seed(1400, kind = "L'Ecuyer-CMRG")
 cl <- makeCluster(5)
 registerDoParallel(cl)
-ATET <- foreach(1:2000, .combine = "mean",.packages = c("dplyr","MASS","resample")) %dorng% {
+ATET <- foreach(1:1000, .combine = "mean",.packages = c("dplyr","MASS","resample")) %dorng% {
       with(make_data(5e5, p, setting_x = setting_x,
                    setting_src = setting_src, setting_trt=setting_trt,
                      setting_main = setting_main, setting_cate = setting_cate), mean(y1[s != 1] - y0[s != 1]))
@@ -208,7 +211,7 @@ For causal generalization, assume in the target sample we only have summary-leve
  
  - `trts` A vector of 0, 1 or TRUE/FALSE of treatment assignment for the source sample.
  
- - `H_vars` A vector of numbers specifying which covariate in the source sample 
+ - `H_vars` A vector of numbers indexing which covariate in the source sample 
  need to be balanced between source and target samples. Here we balance on 1,2,3 covariates.
  
  - `target_moments`A vector of first moments of the target sample covariates 
@@ -279,7 +282,7 @@ setting_x =2
 
 cl <- makeCluster(5)
 registerDoParallel(cl)
-ATET <- foreach(1:2000, .combine = "mean",.packages = c("dplyr","MASS","resample")) %dorng% {
+ATET <- foreach(1:1000, .combine = "mean",.packages = c("dplyr","MASS","resample")) %dorng% {
       with(make_data(5e5, p, setting_x = setting_x,
                    setting_src = setting_src, setting_trt=setting_trt,
                      setting_main = setting_main, setting_cate = setting_cate), mean(y1[s != 1] - y0[s != 1]))
@@ -335,14 +338,7 @@ m.out <- MatchIt::matchit(Source ~ .,
 var = rownames(summary(m.out)[3]$sum.all)
 smd = summary(m.out)[3]$sum.all[,3]
 obs_balance = data.frame(var,smd,data = "Unweighted")
-#Checking balance before and after matching:
-# obs_balance = bal.tab(m.out, thresholds = c(m = .1), un = TRUE, 
-#           drop.distance = TRUE)$Balance
-# obs_balance$var <- rownames(obs_balance)
-# obs_balance <- obs_balance %>% 
-#   select(var, type = Type, smd = Diff.Un) %>%
-#   as_tibble() %>%
-#   mutate(data = "Unweighted")
+
 ggplot(obs_balance[-c(1,8,9),], aes(x = smd, y = fct_reorder(var, smd))) +
   geom_point() +
   geom_vline(xintercept = .10) +

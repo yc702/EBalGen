@@ -1,29 +1,25 @@
-#' Entropy balancing weights for causal generalization
+#' @title Entropy balancing weights for causal generalization
 #' @description Compute the exact and approximate entropy balancing weights
-#' proposed in the paper. If the tolerance margin `delta` is all 0,
+#' proposed in the paper. If the tolerance margin \code{delta} is all 0,
 #' it computes exact balancing weights. Otherwise, it computes approximate
 #' balancing weights.
 #' @param x A data matrix for the source sample. Each column represents
 #' source sample covariate and each row represents an observation.
 #' @param trt A vector of 0, 1 or FALSE/TRUE of treatment assignment for the source sample.
-#' @param H_vars A vector of numbers specifying which covariate in `x`
+#' @param H_vars A vector of numbers indexing which covariate in \code{x}
 #' need to be balanced between source and target samples.
 #' @param target_moments A vector of first moments of the target sample covariates
 #' that needs to be balanced between source and target.
 #' @param H_add_intercept `logical` whether to include 1 as intercept in
 #' H covariates, default as TRUE.
 #' @param delta A vector specifying the approximate balancing tolerance margin.
-#' The vector has a total length of $H+H+G$, where $H$ represents the number of
+#' The vector has a total length of H+H+G, where H represents the number of
 #' covariates balanced between the source (treatment and control) and the
-#' target moments, and $G$ represents the covariates balanced solely between
+#' target moments, and G represents the covariates balanced solely between
 #' the source treatment and control groups. If exact balancing, delta are all zeros.
 #' @return A list containing:
-#' \itemize{
-#'  \item{w}{A vector of entropy balancing weights for causal generalization.}
-#'  \item{theta}{The dual parameters estimated from the optimization process.}
-#' }
-#' @export
-#' @rdname ebal_wts
+#' \item{w}{A vector of entropy balancing weights for causal generalization.}
+#' \item{theta}{The dual parameters estimated from the optimization process.}
 #' @examples
 #' library(EBalGen)
 #' set.seed(1)
@@ -48,6 +44,8 @@
 #'   ebal_wts(x, trt,H_vars, target_moments = target_moments, H_add_intercept = TRUE,delta)
 #'
 #' }
+#' @rdname ebal_wts
+#' @export
 ebal_wts <- function(x, trt,H_vars,
                      target_moments = NULL,
                      H_add_intercept = TRUE,
@@ -200,11 +198,11 @@ ebal_wts <- function(x, trt,H_vars,
 }
 
 
-#' Simple entropy balancing weights for causal generalization
+#' @title Simple entropy balancing weights for causal generalization
 #' @description Compute the simple exact and approximate entropy balancing weights.
 #' The resulting weights calibrate the whole x sample to the target moments (not
 #' distinguishing treated and control), which is equivalent to an exponential
-#' tilting calibration. If the tolerance margin `delta` is all 0,
+#' tilting calibration. If the tolerance margin \code{delta} is all 0,
 #' it computes exact balancing weights. Otherwise, it computes approximate balancing weights.
 #' @param x A data matrix for the source sample. Each column represents
 #' source sample covariate and each row represents an observation.
@@ -213,13 +211,10 @@ ebal_wts <- function(x, trt,H_vars,
 #' @param H_add_intercept `logical` whether to include 1 as intercept in
 #' H covariates, default as TRUE.
 #' @param delta A vector specifying the approximate balancing tolerance margin.
-#' The vector has a total length of `2*ncol(x)`. If exact balancing, delta are all zeros.
+#' The vector has a total length of \code{2*ncol(x)}. If exact balancing, delta are all zeros.
 #' @return A list containing:
-#' \itemize{
-#'  \item{w}{A vector of entropy balancing weights for causal generalization.}
-#'  \item{theta}{The dual parameters estimated from the optimization process.}
-#' }
-#' @export
+#' \item{w}{A vector of entropy balancing weights for causal generalization.}
+#' \item{theta}{The dual parameters estimated from the optimization process.}
 #' @examples
 #' library(EBalGen)
 #' set.seed(1)
@@ -240,7 +235,8 @@ ebal_wts <- function(x, trt,H_vars,
 #'   ebal_wts_simple(x, target_moments = target_moments, H_add_intercept = TRUE,delta)
 #'
 #' }
-#' @rdname ebal_wts
+#' @rdname ebal_wts_simple
+#' @export
 ebal_wts_simple <- function(x,target_moments = NULL,
                             H_add_intercept = TRUE,delta) {
   if (length(target_moments) > NCOL(x)){

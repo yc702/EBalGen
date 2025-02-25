@@ -25,7 +25,7 @@ RPM_AB_delta(
 
 \item{trt}{A vector of 0, 1 or FALSE/TRUE of treatment assignment for the source sample.}
 
-\item{H_vars}{A vector of numbers specifying which covariate in `x`
+\item{H_vars}{A vector of numbers indexing which covariate in \code{x}
 need to be balanced between source and target samples.}
 
 \item{target_mean}{A vector of mean of the target sample covariates
@@ -40,9 +40,9 @@ that needs to be balanced between source and target.}
 H covariates, default as TRUE.}
 
 \item{delta}{A vector specifying the approximate balancing tolerance margin.
-The vector has a total length of $2H+G$, where $H$ represents the number of
+The vector has a total length of 2H+G, where H represents the number of
 covariates balanced between the source (treatment and control) and the
-target moments, and $G$ represents the covariates balanced solely between
+target moments, and G represents the covariates balanced solely between
 the source treatment and control groups. If exact balancing, delta are all zeros.}
 
 \item{cluster}{Number of parallel running CPU cores, Default: 1}
@@ -84,6 +84,6 @@ if (requireNamespace(c("dplyr","doRNG","MASS","resample","doParallel"),
 }
 }
 \references{
-Chen, R., Chen, G., & Yu, M. (2023). Entropy balancing for causal
-generalization with target sample summary information. Biometrics, 79(4)
+Chen, Y., Chen, G., & Yu, M. (2025+). Confidence interval construction for
+causally generalized estimators with summary-level target data.
 }

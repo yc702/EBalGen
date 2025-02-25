@@ -2,12 +2,9 @@
 % Please edit documentation in R/wts_gen.R
 \name{ebal_wts}
 \alias{ebal_wts}
-\alias{ebal_wts_simple}
 \title{Entropy balancing weights for causal generalization}
 \usage{
 ebal_wts(x, trt, H_vars, target_moments = NULL, H_add_intercept = TRUE, delta)
-
-ebal_wts_simple(x, target_moments = NULL, H_add_intercept = TRUE, delta)
 }
 \arguments{
 \item{x}{A data matrix for the source sample. Each column represents
@@ -15,7 +12,7 @@ source sample covariate and each row represents an observation.}
 
 \item{trt}{A vector of 0, 1 or FALSE/TRUE of treatment assignment for the source sample.}
 
-\item{H_vars}{A vector of numbers specifying which covariate in `x`
+\item{H_vars}{A vector of numbers indexing which covariate in \code{x}
 need to be balanced between source and target samples.}
 
 \item{target_moments}{A vector of first moments of the target sample covariates
@@ -25,32 +22,21 @@ that needs to be balanced between source and target.}
 H covariates, default as TRUE.}
 
 \item{delta}{A vector specifying the approximate balancing tolerance margin.
-The vector has a total length of `2*ncol(x)`. If exact balancing, delta are all zeros.}
+The vector has a total length of H+H+G, where H represents the number of
+covariates balanced between the source (treatment and control) and the
+target moments, and G represents the covariates balanced solely between
+the source treatment and control groups. If exact balancing, delta are all zeros.}
 }
 \value{
 A list containing:
-\itemize{
- \item{w}{A vector of entropy balancing weights for causal generalization.}
- \item{theta}{The dual parameters estimated from the optimization process.}
-}
-
-A list containing:
-\itemize{
- \item{w}{A vector of entropy balancing weights for causal generalization.}
- \item{theta}{The dual parameters estimated from the optimization process.}
-}
+\item{w}{A vector of entropy balancing weights for causal generalization.}
+\item{theta}{The dual parameters estimated from the optimization process.}
 }
 \description{
 Compute the exact and approximate entropy balancing weights
-proposed in the paper. If the tolerance margin `delta` is all 0,
+proposed in the paper. If the tolerance margin \code{delta} is all 0,
 it computes exact balancing weights. Otherwise, it computes approximate
 balancing weights.
-
-Compute the simple exact and approximate entropy balancing weights.
-The resulting weights calibrate the whole x sample to the target moments (not
-distinguishing treated and control), which is equivalent to an exponential
-tilting calibration. If the tolerance margin `delta` is all 0,
-it computes exact balancing weights. Otherwise, it computes approximate balancing weights.
 }
 \examples{
 library(EBalGen)
@@ -74,25 +60,6 @@ if (requireNamespace("CVXR", quietly = TRUE)) {
   if (!("MOSEK" \%in\% CVXR::installed_solvers())) {
       rlang::abort("MOSEK solver is not installed. Please install MOSEK to use it with CVXR.")}
   ebal_wts(x, trt,H_vars, target_moments = target_moments, H_add_intercept = TRUE,delta)
-
-}
-library(EBalGen)
-set.seed(1)
-n = 100
-p = 5
-x = runif(n * p)
-x = matrix(4 * x - 2, n, p)
-target_moments = c(0,0,0,0,0)
-delta = numeric(5)
-ebal_wts_simple(x, target_moments = target_moments, H_add_intercept = TRUE,delta)
-
-## Approximate balancing weights requires installation of MOSEK for optimization.
-delta = numeric(5)+0.1
-if (requireNamespace("CVXR", quietly = TRUE)) {
-  library(rlang)
-  if (!("MOSEK" \%in\% CVXR::installed_solvers())) {
-      rlang::abort("MOSEK solver is not installed. Please install MOSEK to use it with CVXR.")}
-  ebal_wts_simple(x, target_moments = target_moments, H_add_intercept = TRUE,delta)
 
 }
 }

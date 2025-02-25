@@ -25,7 +25,7 @@ source sample covariate and each row represents an observation.}
 
 \item{trt}{A vector of 0, 1 or FALSE/TRUE of treatment assignment for the source sample.}
 
-\item{H_vars}{A vector of numbers specifying which covariate in `x`
+\item{H_vars}{A vector of numbers indexing which covariate in `x`
 need to be balanced between source and target samples.}
 
 \item{target_mean}{A vector of mean of the target sample covariates
@@ -49,7 +49,7 @@ A list containing:
  \item{mean_ATE}{The mean ATE over bootstrap.}
  \item{lb_ATE}{The lower bound of 95\% CI.}
  \item{ub_ATE}{The upper bound of 95\% CI.}
- \item{n_success}{The number of feasible solutions in `num_sim` bootstrap.}
+ \item{n_success}{The number of feasible solutions in \code{num_sim} bootstrap.}
 }
 }
 \description{
@@ -68,13 +68,10 @@ trt = rbinom(n,1,0.5)
 H_vars = c(1,2,3)
 target_mean = c(0,0,0)
 target_sd=c(1,1,1)
-if (requireNamespace(c("dplyr","doRNG","MASS","resample","doParallel"),
-  quietly = TRUE)) {
+## Get CI for this generalized ATE
+RPM_CI(x,y,trt,H_vars, target_mean, target_sd, num_sim=50,
+H_add_intercept = TRUE,cluster=1, set_seed=111)
 
-  RPM_CI(x,y,trt,H_vars, target_mean, target_sd, num_sim=50,
-  H_add_intercept = TRUE,cluster=1, set_seed=111)
-
-}
 }
 \references{
 Chen, R., Chen, G., & Yu, M. (2023). Entropy balancing for causal

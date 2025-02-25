@@ -1,10 +1,9 @@
-#' Stabilize weights and get ATE
-#'
+#' @title Stabilize weights and get ATE
 #' @param y A vector of source response values.
 #' @param trt A vector of 0, 1 or FALSE/TRUE of treatment assignment for the source sample.
-#' @param wts A vector of source weights
+#' @param wts A vector of source weights.
 #'
-#' @return `numeric` ATE generalized from source to the target sample.
+#' @return ATE numeric value generalized from source to the target sample.
 #' @examples
 #' library(EBalGen)
 #' set.seed(1)
@@ -33,47 +32,42 @@
 
 
 
-#' Entropy balancing ATE for causal generalization
+#' @title Entropy balancing ATE for causal generalization
 #' @description Compute the exact and approximate Average Treatment Effect (ATE)
 #' using entropy balancing weights proposed in the paper.
 #'
-#' If the tolerance margin `delta` is all 0, it computes the exact balancing ATE.
+#' If the tolerance margin \code{delta} is all 0, it computes the exact balancing ATE.
 #' Otherwise, it computes the approximate balancing ATE. If exact balancing
-#' does not yield a feasible solution, the standard deviation of `x` is
-#' used as `delta` , which convert exact into approximate balancing.
+#' does not yield a feasible solution, the standard deviation of \code{x} is
+#' used as \code{delta} , which convert exact into approximate balancing.
 #'
-#' If the specified `delta` does not yield a feasible solution, for approximate balancing,
+#' If the specified \code{delta} does not yield a feasible solution, for approximate balancing,
 #' the constant is increased (starting from 1) by 1 times delta until a solution is found.
-#' For exact balancing that later uses the standard deviation as `delta`,
+#' For exact balancing that later uses the standard deviation as \code{delta},
 #' the constant is increased (starting from 0) by 0.1 times delta until a solution is achieved.
 #' @param x A data matrix for the source sample. Each column represents
 #' source sample covariate and each row represents an observation.
 #' @param y A vector of the source sample response values.
 #' @param trt A vector of 0, 1 or TRUE/FALSE of treatment assignment for the source sample.
-#' @param H_vars A vector of numbers specifying which covariate in `x`
+#' @param H_vars A vector of numbers indexing which covariate in \code{x}
 #' need to be balanced between source and target samples.
 #' @param target_moments A vector of first moments of the target sample covariates
 #' that needs to be balanced between source and target.
 #' @param H_add_intercept `logical` whether to include 1 as intercept in
 #' H covariates, default as TRUE.
 #' @param delta A vector specifying the approximate balancing tolerance margin.
-#' The vector has a total length of $H+H+G$, where $H$ represents the number of
+#' The vector has a total length of H+H+G, where H represents the number of
 #' covariates balanced between the source (treatment and control) and the
-#' target moments, and $G$ represents the covariates balanced solely between
+#' target moments, and G represents the covariates balanced solely between
 #' the source treatment and control groups. If exact balancing, delta are all zeros.
 #'
 #' @return A list containing:
-#' \itemize{
-#'  \item{ate_est}{ATE for causal generalization.}
-#'  \item{constant}{The final constant used for the approximate balancing
+#' \item{ate_est}{ATE for causal generalization.}
+#' \item{constant}{The final constant used for the approximate balancing
 #'  tolerance margin if no feasible solution is achieved with the specified `delta`.
 #'  If the specified `delta` results in a feasible solution, the constant remains 0.
 #'  Otherwise, the constant is incrementally increased, multiplying `delta`
 #'  until a feasible solution is found.}
-#' }
-#' @export
-#' @rdname ebal_ATE
-#' @import dplyr
 #' @details
 #' `ebal_ATE` computes causal generalized ATE from source to the target sample by
 #' estimating entropy balancing weights. See Chen, Chen, Yu (2023) method details
@@ -108,6 +102,10 @@
 #'   ebal_ATE(x,y,trt,H_vars, target_moments = target_moments, H_add_intercept = TRUE,delta)
 #'
 #' }
+#' @rdname ebal_ATE
+#' @export
+#' @import dplyr
+#' @import resample
 ebal_ATE <- function(x,y,trt,H_vars,
                      target_moments,
                      H_add_intercept=TRUE,delta){
