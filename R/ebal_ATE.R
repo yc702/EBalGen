@@ -14,12 +14,13 @@
 #' y = rnorm(n*p)
 #' trt = rbinom(n,1,0.5)
 #' wts = plogis(rnorm(n))
-#' .weighted_ATE(y, trt,wts)
+#' weighted_ATE(y, trt,wts)
 #' @noRd
 #' @import dplyr
 #' @importFrom dplyr %>%
-.weighted_ATE <- function(y,trt,wts){
+weighted_ATE <- function(y,trt,wts){
   wts_gen <- wts %>% dplyr::as_tibble() %>%
+    dplyr::mutate(trt = trt) %>%
     dplyr::group_by(trt) %>%
     dplyr::mutate_at(vars(-group_cols()), function(z) z / sum(z)) %>%
     dplyr::ungroup() %>%
@@ -174,7 +175,7 @@ ebal_ATE <- function(x,y,trt,H_vars,
     }
     constant=ifelse(constant==1,0,constant)
   }
-  ate_est <- .weighted_ATE(y=y,trt=trt,wts=wts_gen)
+  ate_est <- weighted_ATE(y=y,trt=trt,wts=wts_gen)
 
   list(ATE = ate_est, constant = constant)
 }

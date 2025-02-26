@@ -2,3 +2,6 @@
 ^\.Rproj\.user$
 ^LICENSE\.md$
 ^\.github$
+^readme\.md$
+^sim_code\.R$
+^simu_make_data_readme\.R$

@@ -25,12 +25,12 @@
 #' }
 #' @import dplyr
 #' @import doRNG
-#' @import rockchalk
+#' @importFrom rockchalk mvrnorm
 #' @import resample
 #' @import doParallel
 #' @import parallel
 #' @import foreach
-#' @import stats
+#' @importFrom stats cor quantile
 #' @rdname RPM_CI
 #' @export
 #'
@@ -77,7 +77,7 @@ RPM_CI <- function(x,y,trt,H_vars,target_mean,
   if(!is.null(set_seed)){set.seed(set_seed, kind = "L'Ecuyer-CMRG")}
 
   perturb_CI <- foreach::foreach(i=1:num_sim, .combine = rbind,
-                                 .export=c("ebal_wts",".weighted_ATE"),
+                                 .export=c("ebal_wts","weighted_ATE"),
                                  .packages = c("dplyr","rockchalk","resample")) %dorng% {
 
                                    target_moments <- rockchalk::mvrnorm(1,target_mean,diag(target_sd)%*%stats::cor(x[,H_vars])%*%diag(target_sd))
@@ -97,7 +97,7 @@ RPM_CI <- function(x,y,trt,H_vars,target_mean,
                                    #if (round(sum(wts_gen))!=nx_s*2| all(is.na(wts_gen))){
                                    #  wts_gen=rep(NA,nx_s)
                                    #}
-                                   .weighted_ATE(y=y_s,trt=trts,wts=wts_gen)
+                                   weighted_ATE(y=y_s,trt=trts,wts=wts_gen)
 
 
                                  }

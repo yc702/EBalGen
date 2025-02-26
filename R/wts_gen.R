@@ -45,7 +45,7 @@
 #' }
 #' @rdname ebal_wts
 #' @export
-#' @import stats
+#' @importFrom stats optim
 ebal_wts <- function(x, trt,H_vars,
                      target_moments = NULL,
                      H_add_intercept = TRUE,
@@ -236,7 +236,7 @@ ebal_wts <- function(x, trt,H_vars,
 #' }
 #' @rdname ebal_wts_simple
 #' @export
-#' @import stats
+#' @importFrom stats optim
 ebal_wts_simple <- function(x,target_moments = NULL,
                             H_add_intercept = TRUE,delta) {
   if (length(target_moments) > NCOL(x)){

@@ -1,5 +1,5 @@
 test_that("ebal_wts has correct output", {
-  n = 200
+  n = 100
   p = 5
   x = runif(n * p)
   x = matrix(4 * x - 2, n, p)

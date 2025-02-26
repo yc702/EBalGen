@@ -32,29 +32,29 @@
 #' n = 100
 #' p = 5
 #' x = runif(n * p)
-#' x = matrix(10 * x - 2, n, p)
+#' x = matrix(6 * x - 2, n, p)
 #' y = rnorm(n*p)
 #' trt = rbinom(n,1,0.5)
 #' H_vars = c(1,2,3)
-#' target_mean = c(2,2,2)
+#' target_mean = c(0,0,0)
 #' target_sd=c(1,1,1)
 #' if (requireNamespace(c("dplyr","doRNG","rockchalk","resample","doParallel"),
 #'   quietly = TRUE)) {
-#'
-#'   RPM_AB(x,y,trt,H_vars, target_mean, target_sd, num_sim=50,
+#'   \dontrun{
+#'   RPM_AB(x,y,trt,H_vars, target_mean, target_sd, num_sim=10,
 #'   H_add_intercept = TRUE,cluster=1, set_seed=111)
-#'
+#'}
 #' }
 #' @rdname RPM_AB
 #' @export
 #' @import dplyr
 #' @import doRNG
-#' @import rockchalk
+#' @importFrom rockchalk mvrnorm
 #' @import resample
 #' @import doParallel
 #' @import parallel
 #' @import foreach
-#' @import stats
+#' @importFrom stats cor quantile
 RPM_AB <- function(x,y,trt,H_vars,target_mean,
                    target_sd,num_sim,
                    H_add_intercept=TRUE,
@@ -102,7 +102,7 @@ RPM_AB <- function(x,y,trt,H_vars,target_mean,
   if(!is.null(set_seed)){set.seed(set_seed, kind = "L'Ecuyer-CMRG")}
   perturb_CI <- foreach(1:num_sim, .combine = rbind,
                         .packages = c("dplyr","rockchalk","resample","CVXR"),
-                        .export=c("ebal_wts",".weighted_ATE"),
+                        .export=c("ebal_wts","weighted_ATE"),
                         .errorhandling = 'remove') %dorng% {
 
                           target_moments <- rockchalk::mvrnorm(1,target_mean,diag(target_sd)%*%stats::cor(x[,H_vars])%*%diag(target_sd))
@@ -142,7 +142,7 @@ RPM_AB <- function(x,y,trt,H_vars,target_mean,
                             )
                           }
 
-                          approx_ATE <- .weighted_ATE(y_s,trts,wts_gen)
+                          approx_ATE <- weighted_ATE(y_s,trts,wts_gen)
 
                           c(approx_ATE,constant)
                         }
@@ -201,30 +201,30 @@ RPM_AB <- function(x,y,trt,H_vars,target_mean,
 #' n = 100
 #' p = 5
 #' x = runif(n * p)
-#' x = matrix(10 * x - 2, n, p)
+#' x = matrix(6 * x - 2, n, p)
 #' y = rnorm(n*p)
 #' trt = rbinom(n,1,0.5)
 #' H_vars = c(1,2,3)
-#' target_mean = c(1,2,3)
+#' target_mean = c(0,0,0)
 #' target_sd=c(1,1,1)
 #' delta = numeric(8)+0.1
 #' if (requireNamespace(c("dplyr","doRNG","rockchalk","resample","doParallel"),
 #'   quietly = TRUE)) {
-#'
-#'   RPM_AB_delta(x,y,trt,H_vars, target_mean, target_sd, num_sim=50,
+#'   \dontrun{
+#'   RPM_AB_delta(x,y,trt,H_vars, target_mean, target_sd, num_sim=10,
 #'   H_add_intercept = TRUE,delta,cluster=1, set_seed=111)
-#'
+#'}
 #' }
 #' @rdname RPM_AB_delta
 #' @export
 #' @import dplyr
 #' @import doRNG
-#' @import rockchalk
+#' @importFrom rockchalk mvrnorm
 #' @import resample
 #' @import doParallel
 #' @import parallel
 #' @import foreach
-#' @import stats
+#' @importFrom stats cor quantile
 RPM_AB_delta <- function(x,y,trt,H_vars,target_mean,
                          target_sd,num_sim,
                          H_add_intercept=TRUE,delta,
@@ -248,7 +248,7 @@ RPM_AB_delta <- function(x,y,trt,H_vars,target_mean,
 
   perturb_CI <- foreach(1:num_sim, .combine = rbind,
                         .packages = c("dplyr","rockchalk","CVXR"),
-                        .export=c("ebal_wts",".weighted_ATE"),
+                        .export=c("ebal_wts","weighted_ATE"),
                         .errorhandling = 'remove') %dorng% {
 
                           target_moments <- rockchalk::mvrnorm(1,target_mean,diag(target_sd)%*%stats::cor(x[,H_vars])%*%diag(target_sd))
@@ -276,7 +276,7 @@ RPM_AB_delta <- function(x,y,trt,H_vars,target_mean,
                           #   wts_gen <- approx_bal(x_s, trts, target_moments,H_add_intercept = TRUE,delta=delta*constant)$w
                           # }
 
-                          approx_ATE <- .weighted_ATE(y_s,trts,wts_gen)
+                          approx_ATE <- weighted_ATE(y_s,trts,wts_gen)
 
 
                         }

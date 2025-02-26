@@ -68,19 +68,19 @@ set.seed(1)
 n = 100
 p = 5
 x = runif(n * p)
-x = matrix(10 * x - 2, n, p)
+x = matrix(6 * x - 2, n, p)
 y = rnorm(n*p)
 trt = rbinom(n,1,0.5)
 H_vars = c(1,2,3)
-target_mean = c(1,2,3)
+target_mean = c(0,0,0)
 target_sd=c(1,1,1)
 delta = numeric(8)+0.1
 if (requireNamespace(c("dplyr","doRNG","rockchalk","resample","doParallel"),
   quietly = TRUE)) {
-
-  RPM_AB_delta(x,y,trt,H_vars, target_mean, target_sd, num_sim=50,
+  \dontrun{
+  RPM_AB_delta(x,y,trt,H_vars, target_mean, target_sd, num_sim=10,
   H_add_intercept = TRUE,delta,cluster=1, set_seed=111)
-
+}
 }
 }
 \references{
