@@ -68,7 +68,7 @@ trt = rbinom(n,1,0.5)
 H_vars = c(1,2,3)
 target_mean = c(2,2,2)
 target_sd=c(1,1,1)
-if (requireNamespace(c("dplyr","doRNG","MASS","resample","doParallel"),
+if (requireNamespace(c("dplyr","doRNG","rockchalk","resample","doParallel"),
   quietly = TRUE)) {
 
   RPM_AB(x,y,trt,H_vars, target_mean, target_sd, num_sim=50,

@@ -25,7 +25,7 @@
 #' }
 #' @import dplyr
 #' @import doRNG
-#' @import MASS
+#' @import rockchalk
 #' @import resample
 #' @import doParallel
 #' @import parallel
@@ -77,9 +77,9 @@ RPM_CI <- function(x,y,trt,H_vars,target_mean,
 
   perturb_CI <- foreach::foreach(i=1:num_sim, .combine = rbind,
                                  .export=c("ebal_wts",".weighted_ATE"),
-                                 .packages = c("dplyr","MASS","resample")) %dorng% {
+                                 .packages = c("dplyr","rockchalk","resample")) %dorng% {
 
-                                   target_moments <- mvrnorm(1,target_mean,diag(target_sd)%*%cor(x[,H_vars])%*%diag(target_sd))
+                                   target_moments <- rockchalk::mvrnorm(1,target_mean,diag(target_sd)%*%cor(x[,H_vars])%*%diag(target_sd))
 
                                    id_source <- sample(nx_s,nx_s,replace = TRUE)
                                    x_s <- x[id_source,]

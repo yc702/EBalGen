@@ -75,7 +75,7 @@ H_vars = c(1,2,3)
 target_mean = c(1,2,3)
 target_sd=c(1,1,1)
 delta = numeric(8)+0.1
-if (requireNamespace(c("dplyr","doRNG","MASS","resample","doParallel"),
+if (requireNamespace(c("dplyr","doRNG","rockchalk","resample","doParallel"),
   quietly = TRUE)) {
 
   RPM_AB_delta(x,y,trt,H_vars, target_mean, target_sd, num_sim=50,

@@ -38,7 +38,7 @@
 #' H_vars = c(1,2,3)
 #' target_mean = c(2,2,2)
 #' target_sd=c(1,1,1)
-#' if (requireNamespace(c("dplyr","doRNG","MASS","resample","doParallel"),
+#' if (requireNamespace(c("dplyr","doRNG","rockchalk","resample","doParallel"),
 #'   quietly = TRUE)) {
 #'
 #'   RPM_AB(x,y,trt,H_vars, target_mean, target_sd, num_sim=50,
@@ -49,7 +49,7 @@
 #' @export
 #' @import dplyr
 #' @import doRNG
-#' @import MASS
+#' @import rockchalk
 #' @import resample
 #' @import doParallel
 #' @import parallel
@@ -100,11 +100,11 @@ RPM_AB <- function(x,y,trt,H_vars,target_mean,
 
   if(!is.null(set_seed)){set.seed(set_seed, kind = "L'Ecuyer-CMRG")}
   perturb_CI <- foreach(1:num_sim, .combine = rbind,
-                        .packages = c("dplyr","MASS","resample","CVXR"),
+                        .packages = c("dplyr","rockchalk","resample","CVXR"),
                         .export=c("ebal_wts",".weighted_ATE"),
                         .errorhandling = 'remove') %dorng% {
 
-                          target_moments <- mvrnorm(1,target_mean,diag(target_sd)%*%cor(x[,H_vars])%*%diag(target_sd))
+                          target_moments <- rockchalk::mvrnorm(1,target_mean,diag(target_sd)%*%cor(x[,H_vars])%*%diag(target_sd))
 
                           id_source <- sample(nx_s,nx_s,replace = TRUE)
                           x_s <- x[id_source,]
@@ -207,7 +207,7 @@ RPM_AB <- function(x,y,trt,H_vars,target_mean,
 #' target_mean = c(1,2,3)
 #' target_sd=c(1,1,1)
 #' delta = numeric(8)+0.1
-#' if (requireNamespace(c("dplyr","doRNG","MASS","resample","doParallel"),
+#' if (requireNamespace(c("dplyr","doRNG","rockchalk","resample","doParallel"),
 #'   quietly = TRUE)) {
 #'
 #'   RPM_AB_delta(x,y,trt,H_vars, target_mean, target_sd, num_sim=50,
@@ -218,7 +218,7 @@ RPM_AB <- function(x,y,trt,H_vars,target_mean,
 #' @export
 #' @import dplyr
 #' @import doRNG
-#' @import MASS
+#' @import rockchalk
 #' @import resample
 #' @import doParallel
 #' @import parallel
@@ -245,11 +245,11 @@ RPM_AB_delta <- function(x,y,trt,H_vars,target_mean,
   if(!is.null(set_seed)){set.seed(set_seed, kind = "L'Ecuyer-CMRG")}
 
   perturb_CI <- foreach(1:num_sim, .combine = rbind,
-                        .packages = c("dplyr","MASS","CVXR"),
+                        .packages = c("dplyr","rockchalk","CVXR"),
                         .export=c("ebal_wts",".weighted_ATE"),
                         .errorhandling = 'remove') %dorng% {
 
-                          target_moments <- mvrnorm(1,target_mean,diag(target_sd)%*%cor(x[,H_vars])%*%diag(target_sd))
+                          target_moments <- rockchalk::mvrnorm(1,target_mean,diag(target_sd)%*%cor(x[,H_vars])%*%diag(target_sd))
 
                           id_source <- sample(nx_s,nx_s,replace = TRUE)
                           x_s <- x[id_source,]

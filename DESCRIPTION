@@ -22,7 +22,7 @@ Imports:
     doParallel (>= 1.0.17),
     doRNG (>= 1.8.6),
     dplyr (>= 1.1.4),
-    MASS (>= 7.3-60.2),
+    rockchalk (>= 1.8.157),
     resample (>= 0.6),
     parallel (>= 4.4.0),
     foreach (>= 1.5.2)
