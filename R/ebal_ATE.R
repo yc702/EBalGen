@@ -96,10 +96,9 @@
 #' ## Approximate balancing ATE requires installation of MOSEK for optimization.
 #' delta = numeric(8)+0.1
 #' if (requireNamespace("CVXR", quietly = TRUE)) {
-#'   library(rlang)
 #'   library(dplyr)
 #'   if (!("MOSEK" %in% CVXR::installed_solvers())) {
-#'       rlang::abort("MOSEK solver is not installed. Please install MOSEK to use it with CVXR.")}
+#'     stop("MOSEK solver is not installed. Please install MOSEK to use it with CVXR.")}
 #'   ebal_ATE(x,y,trt,H_vars, target_moments = target_moments, H_add_intercept = TRUE,delta)
 #'
 #' }
