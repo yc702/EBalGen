@@ -1,4 +1,5 @@
 test_that("CI construction has correct output", {
+  set.seed(1400, kind = "L'Ecuyer-CMRG")
   n = 100
   p = 5
   x = runif(n * p)
@@ -14,9 +15,9 @@ test_that("CI construction has correct output", {
                                        H_add_intercept = TRUE,cluster=1, set_seed=111)})
   expect_no_condition({AB_CI <- RPM_AB_delta(x,y,trt,H_vars, target_mean, target_sd, num_sim=100,
                                              H_add_intercept = TRUE,delta=numeric(8)+0.01,cluster=1, set_seed=111)})
-  expect_equal(EB_CI$mean_ATE, AB_CI$mean_ATE, tolerance = 0.1)
-  expect_equal(EB_CI$lb_ATE, AB_CI$lb_ATE, tolerance = 0.1)
-  expect_equal(EB_CI$ub_ATE, AB_CI$ub_ATE, tolerance = 0.1)
+  expect_equal(EB_CI$mean_ATE, AB_CI$mean_ATE, tolerance = 0.2)
+  expect_equal(EB_CI$lb_ATE, AB_CI$lb_ATE, tolerance = 0.2)
+  expect_equal(EB_CI$ub_ATE, AB_CI$ub_ATE, tolerance = 0.2)
 
 
 

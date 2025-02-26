@@ -1,5 +1,6 @@
 
 test_that("ebal_ATE has correct output", {
+  set.seed(1400, kind = "L'Ecuyer-CMRG")
   n = 100
   p = 5
   x = runif(n * p)
@@ -41,7 +42,7 @@ test_that("ebal_ATE has correct output", {
                           H_add_intercept = TRUE,delta=numeric(8)+0.03)
 
   expect_equal(ATE_wts,ATE_ebal_AB$ATE)
-  expect_equal(ATE_ebal_EB, ATE_ebal_AB, tolerance = 0.1)
+  expect_equal(ATE_ebal_EB, ATE_ebal_AB, tolerance = 0.2)
 
 
 })

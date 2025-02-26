@@ -1,4 +1,5 @@
 test_that("ebal_wts has correct output", {
+  set.seed(1400, kind = "L'Ecuyer-CMRG")
   n = 100
   p = 5
   x = runif(n * p)
