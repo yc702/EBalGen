@@ -31,12 +31,14 @@ the source treatment and control groups. If exact balancing, delta are all zeros
 }
 \value{
 A list containing:
-\item{ate_est}{ATE for causal generalization.}
-\item{constant}{The final constant used for the approximate balancing
+\describe{
+  \item{ate_est}{ATE for causal generalization.}
+ \item{constant}{The final constant used for the approximate balancing
  tolerance margin if no feasible solution is achieved with the specified `delta`.
  If the specified `delta` results in a feasible solution, the constant remains 0.
  Otherwise, the constant is incrementally increased, multiplying `delta`
  until a feasible solution is found.}
+ }
 }
 \description{
 Compute the exact and approximate Average Treatment Effect (ATE)

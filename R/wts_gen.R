@@ -38,14 +38,14 @@
 #' ## Approximate balancing weights requires installation of MOSEK for optimization.
 #' delta = numeric(8)+0.1
 #' if (requireNamespace("CVXR", quietly = TRUE)) {
-#'   library(rlang)
 #'   if (!("MOSEK" %in% CVXR::installed_solvers())) {
-#'       rlang::abort("MOSEK solver is not installed. Please install MOSEK to use it with CVXR.")}
+#'       stop("MOSEK solver is not installed. Please install MOSEK to use it with CVXR.")}
 #'   ebal_wts(x, trt,H_vars, target_moments = target_moments, H_add_intercept = TRUE,delta)
 #'
 #' }
 #' @rdname ebal_wts
 #' @export
+#' @import stats
 ebal_wts <- function(x, trt,H_vars,
                      target_moments = NULL,
                      H_add_intercept = TRUE,
@@ -130,7 +130,7 @@ ebal_wts <- function(x, trt,H_vars,
     }
 
     # Optimization is done with the built-in optim function
-    opt <- optim(rep(0, 2 * K_h + K_g), fn = dual_fn, gr = dual_grad, method = "BFGS",
+    opt <- stats::optim(rep(0, 2 * K_h + K_g), fn = dual_fn, gr = dual_grad, method = "BFGS",
                  control = list(trace = 0,
                                 reltol = 1e-10,
                                 maxit = 1e4))
@@ -229,14 +229,14 @@ ebal_wts <- function(x, trt,H_vars,
 #' ## Approximate balancing weights requires installation of MOSEK for optimization.
 #' delta = numeric(5)+0.1
 #' if (requireNamespace("CVXR", quietly = TRUE)) {
-#'   library(rlang)
 #'   if (!("MOSEK" %in% CVXR::installed_solvers())) {
-#'       rlang::abort("MOSEK solver is not installed. Please install MOSEK to use it with CVXR.")}
+#'       stop("MOSEK solver is not installed. Please install MOSEK to use it with CVXR.")}
 #'   ebal_wts_simple(x, target_moments = target_moments, H_add_intercept = TRUE,delta)
 #'
 #' }
 #' @rdname ebal_wts_simple
 #' @export
+#' @import stats
 ebal_wts_simple <- function(x,target_moments = NULL,
                             H_add_intercept = TRUE,delta) {
   if (length(target_moments) > NCOL(x)){
@@ -267,7 +267,7 @@ ebal_wts_simple <- function(x,target_moments = NULL,
     dual_grad <- function(lambda) colMeans(primal_w(lambda) * x) - target_moments
 
     # Optimization is done with the built-in optim function
-    opt <- optim(rep(0, NCOL(x)), fn = dual_fn, gr = dual_grad, method = "BFGS",
+    opt <- stats::optim(rep(0, NCOL(x)), fn = dual_fn, gr = dual_grad, method = "BFGS",
                  control = list(trace = 0,
                                 reltol = 1e-10,
                                 maxit = 1e4))

@@ -45,9 +45,8 @@ ebal_wts_simple(x, target_moments = target_moments, H_add_intercept = TRUE,delta
 ## Approximate balancing weights requires installation of MOSEK for optimization.
 delta = numeric(5)+0.1
 if (requireNamespace("CVXR", quietly = TRUE)) {
-  library(rlang)
   if (!("MOSEK" \%in\% CVXR::installed_solvers())) {
-      rlang::abort("MOSEK solver is not installed. Please install MOSEK to use it with CVXR.")}
+      stop("MOSEK solver is not installed. Please install MOSEK to use it with CVXR.")}
   ebal_wts_simple(x, target_moments = target_moments, H_add_intercept = TRUE,delta)
 
 }

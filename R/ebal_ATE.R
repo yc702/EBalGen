@@ -20,11 +20,10 @@
 #' @importFrom dplyr %>%
 .weighted_ATE <- function(y,trt,wts){
   wts_gen <- wts %>% dplyr::as_tibble() %>%
-    dplyr::mutate(trts = trt) %>%
-    dplyr::group_by(trts) %>%
+    dplyr::group_by(trt) %>%
     dplyr::mutate_at(vars(-group_cols()), function(z) z / sum(z)) %>%
     dplyr::ungroup() %>%
-    dplyr::select(-trts)
+    dplyr::select(-trt)
 
   colSums((2 * trt - 1) * y * wts_gen)
 
@@ -62,12 +61,14 @@
 #' the source treatment and control groups. If exact balancing, delta are all zeros.
 #'
 #' @return A list containing:
-#' \item{ate_est}{ATE for causal generalization.}
-#' \item{constant}{The final constant used for the approximate balancing
+#' \describe{
+#'   \item{ate_est}{ATE for causal generalization.}
+#'  \item{constant}{The final constant used for the approximate balancing
 #'  tolerance margin if no feasible solution is achieved with the specified `delta`.
 #'  If the specified `delta` results in a feasible solution, the constant remains 0.
 #'  Otherwise, the constant is incrementally increased, multiplying `delta`
 #'  until a feasible solution is found.}
+#'  }
 #' @details
 #' `ebal_ATE` computes causal generalized ATE from source to the target sample by
 #' estimating entropy balancing weights. See Chen, Chen, Yu (2023) method details

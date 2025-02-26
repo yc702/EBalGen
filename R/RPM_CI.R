@@ -30,6 +30,7 @@
 #' @import doParallel
 #' @import parallel
 #' @import foreach
+#' @import stats
 #' @rdname RPM_CI
 #' @export
 #'
@@ -79,7 +80,7 @@ RPM_CI <- function(x,y,trt,H_vars,target_mean,
                                  .export=c("ebal_wts",".weighted_ATE"),
                                  .packages = c("dplyr","rockchalk","resample")) %dorng% {
 
-                                   target_moments <- rockchalk::mvrnorm(1,target_mean,diag(target_sd)%*%cor(x[,H_vars])%*%diag(target_sd))
+                                   target_moments <- rockchalk::mvrnorm(1,target_mean,diag(target_sd)%*%stats::cor(x[,H_vars])%*%diag(target_sd))
 
                                    id_source <- sample(nx_s,nx_s,replace = TRUE)
                                    x_s <- x[id_source,]
@@ -105,8 +106,8 @@ RPM_CI <- function(x,y,trt,H_vars,target_mean,
   ## get the CIs and see how many times the ATET is in the CI
   perturb_CI = data.frame(perturb_CI)
   mean_ATE <- mean(perturb_CI$value,na.rm = TRUE)
-  lb_ATE <- quantile(perturb_CI$value,0.025,na.rm = TRUE)
-  ub_ATE <- quantile(perturb_CI$value,0.975,na.rm = TRUE)
+  lb_ATE <- stats::quantile(perturb_CI$value,0.025,na.rm = TRUE)
+  ub_ATE <- stats::quantile(perturb_CI$value,0.975,na.rm = TRUE)
   n_success <- sum(!is.na(perturb_CI$value))
 
   ## output weights and dual parameters.

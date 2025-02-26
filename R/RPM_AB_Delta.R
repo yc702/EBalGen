@@ -54,6 +54,7 @@
 #' @import doParallel
 #' @import parallel
 #' @import foreach
+#' @import stats
 RPM_AB <- function(x,y,trt,H_vars,target_mean,
                    target_sd,num_sim,
                    H_add_intercept=TRUE,
@@ -104,7 +105,7 @@ RPM_AB <- function(x,y,trt,H_vars,target_mean,
                         .export=c("ebal_wts",".weighted_ATE"),
                         .errorhandling = 'remove') %dorng% {
 
-                          target_moments <- rockchalk::mvrnorm(1,target_mean,diag(target_sd)%*%cor(x[,H_vars])%*%diag(target_sd))
+                          target_moments <- rockchalk::mvrnorm(1,target_mean,diag(target_sd)%*%stats::cor(x[,H_vars])%*%diag(target_sd))
 
                           id_source <- sample(nx_s,nx_s,replace = TRUE)
                           x_s <- x[id_source,]
@@ -150,8 +151,8 @@ RPM_AB <- function(x,y,trt,H_vars,target_mean,
   perturb_CI <- data.frame(perturb_CI)
   n_success <- sum(!is.na(perturb_CI[,1]))
   mean_ATE <- mean(perturb_CI[,1],na.rm=TRUE)
-  lb_ATE <- quantile(perturb_CI[,1],0.025,na.rm=TRUE)
-  ub_ATE <- quantile(perturb_CI[,1],0.975,na.rm=TRUE)
+  lb_ATE <- stats::quantile(perturb_CI[,1],0.025,na.rm=TRUE)
+  ub_ATE <- stats::quantile(perturb_CI[,1],0.975,na.rm=TRUE)
   delta_0 = sum(perturb_CI[,2]==0)
 
   list(mean_ATE=mean_ATE,lb_ATE=lb_ATE, ub_ATE=ub_ATE,
@@ -223,6 +224,7 @@ RPM_AB <- function(x,y,trt,H_vars,target_mean,
 #' @import doParallel
 #' @import parallel
 #' @import foreach
+#' @import stats
 RPM_AB_delta <- function(x,y,trt,H_vars,target_mean,
                          target_sd,num_sim,
                          H_add_intercept=TRUE,delta,
@@ -249,7 +251,7 @@ RPM_AB_delta <- function(x,y,trt,H_vars,target_mean,
                         .export=c("ebal_wts",".weighted_ATE"),
                         .errorhandling = 'remove') %dorng% {
 
-                          target_moments <- rockchalk::mvrnorm(1,target_mean,diag(target_sd)%*%cor(x[,H_vars])%*%diag(target_sd))
+                          target_moments <- rockchalk::mvrnorm(1,target_mean,diag(target_sd)%*%stats::cor(x[,H_vars])%*%diag(target_sd))
 
                           id_source <- sample(nx_s,nx_s,replace = TRUE)
                           x_s <- x[id_source,]
@@ -287,8 +289,8 @@ RPM_AB_delta <- function(x,y,trt,H_vars,target_mean,
 
     n_success <- sum(!is.na(perturb_CI[,1]))
     mean_ATE <- mean(perturb_CI[,1],na.rm=TRUE)
-    lb_ATE <- quantile(perturb_CI[,1],0.025,na.rm=TRUE)
-    ub_ATE <- quantile(perturb_CI[,1],0.975,na.rm=TRUE)
+    lb_ATE <- stats::quantile(perturb_CI[,1],0.025,na.rm=TRUE)
+    ub_ATE <- stats::quantile(perturb_CI[,1],0.975,na.rm=TRUE)
 
     list(mean_ATE=mean_ATE,lb_ATE=lb_ATE, ub_ATE=ub_ATE,n_success=n_success)
   }
