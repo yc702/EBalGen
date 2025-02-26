@@ -19,15 +19,14 @@ Suggests:
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
 Imports: 
-    doParallel (>= 1.0.17),
-    doRNG (>= 1.8.6),
-    dplyr (>= 1.1.4),
-    rockchalk (>= 1.8.157),
-    resample (>= 0.6),
-    parallel (>= 4.4.0),
-    foreach (>= 1.5.2),
-    stats (>= 3.4.0),
-    rockchalk (>= 1.4)
+    doParallel,
+    doRNG ,
+    dplyr ,
+    resample ,
+    parallel ,
+    foreach ,
+    stats ,
+    rockchalk
 RoxygenNote: 7.3.2
 URL: https://github.com/yc702/EBalGen
 BugReports: https://github.com/yc702/EBalGen/issues
