@@ -23,7 +23,7 @@
 #'  \item{ub_ATE}{The upper bound of 95\% CI.}
 #'  \item{n_success}{The number of feasible solutions in \code{num_sim} bootstrap.}
 #' }
-#' @import dplyr
+#' @importFrom dplyr %>% as_tibble mutate group_by mutate_at ungroup select vars group_cols
 #' @import doRNG
 #' @importFrom rockchalk mvrnorm
 #' @import resample

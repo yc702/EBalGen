@@ -47,7 +47,7 @@
 #' }
 #' @rdname RPM_AB
 #' @export
-#' @import dplyr
+#' @importFrom dplyr %>% as_tibble mutate group_by mutate_at ungroup select vars group_cols
 #' @import doRNG
 #' @importFrom rockchalk mvrnorm
 #' @import resample
@@ -55,6 +55,7 @@
 #' @import parallel
 #' @import foreach
 #' @importFrom stats cor quantile
+#' @import CVXR
 RPM_AB <- function(x,y,trt,H_vars,target_mean,
                    target_sd,num_sim,
                    H_add_intercept=TRUE,
@@ -217,7 +218,7 @@ RPM_AB <- function(x,y,trt,H_vars,target_mean,
 #' }
 #' @rdname RPM_AB_delta
 #' @export
-#' @import dplyr
+#' @importFrom dplyr %>% as_tibble mutate group_by mutate_at ungroup select vars group_cols
 #' @import doRNG
 #' @importFrom rockchalk mvrnorm
 #' @import resample
@@ -225,6 +226,7 @@ RPM_AB <- function(x,y,trt,H_vars,target_mean,
 #' @import parallel
 #' @import foreach
 #' @importFrom stats cor quantile
+#' @import CVXR
 RPM_AB_delta <- function(x,y,trt,H_vars,target_mean,
                          target_sd,num_sim,
                          H_add_intercept=TRUE,delta,

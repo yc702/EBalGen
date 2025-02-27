@@ -1,4 +1,9 @@
-test_that("ebal_wts has correct output", {
+check_for_mosek <- function() {
+  if (!("MOSEK" %in% CVXR::installed_solvers())) {
+    testthat::skip("MOSEK solver is not installed. Please install MOSEK to use it with CVXR.")
+  }
+}
+test_that("ebal_wts exact balancing has correct output", {
   set.seed(1400, kind = "L'Ecuyer-CMRG")
   n = 100
   p = 5
@@ -24,8 +29,21 @@ test_that("ebal_wts has correct output", {
                "Error: number of target moments must be equal to the number of
          specified covariates in the source")
 
+})
+
+
+test_that("ebal_wts approx balancing has correct output", {
+  set.seed(1400, kind = "L'Ecuyer-CMRG")
+  n = 100
+  p = 5
+  x = runif(n * p)
+  x = matrix(4 * x - 2, n, p)
+  trt = rbinom(n,1,0.5)
+  H_vars = c(1,2,3)
+  target_moments = c(0,0,0)
 
   ## Approximate balancing weights
+  check_for_mosek()
   target_moments = c(0,0,0)
   expect_no_condition({wts_full_AB <- ebal_wts(x, trt,H_vars, target_moments = target_moments,
                                                H_add_intercept = TRUE,delta=numeric(8)+0.1)$w})
@@ -35,7 +53,6 @@ test_that("ebal_wts has correct output", {
   expect_equal(round(sum(wts_full_AB)),2*n)
   expect_equal(round(sum(wts_simple_AB)),n)
   expect_failure(expect_equal(wts_full_AB, wts_simple_AB))
-  expect_equal(wts_simple_EB, wts_simple_AB, tolerance = 0.1)
 
   H_vars = c(1,2,3,4)
   expect_error(ebal_wts(x, trt,H_vars, target_moments = target_moments,

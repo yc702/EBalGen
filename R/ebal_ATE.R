@@ -16,8 +16,7 @@
 #' wts = plogis(rnorm(n))
 #' weighted_ATE(y, trt,wts)
 #' @noRd
-#' @import dplyr
-#' @importFrom dplyr %>%
+#' @importFrom dplyr %>% as_tibble mutate group_by mutate_at ungroup select vars group_cols
 weighted_ATE <- function(y,trt,wts){
   wts_gen <- wts %>% dplyr::as_tibble() %>%
     dplyr::mutate(trt = trt) %>%
@@ -105,7 +104,6 @@ weighted_ATE <- function(y,trt,wts){
 #' }
 #' @rdname ebal_ATE
 #' @export
-#' @import dplyr
 #' @import resample
 ebal_ATE <- function(x,y,trt,H_vars,
                      target_moments,

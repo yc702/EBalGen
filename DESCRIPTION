@@ -15,7 +15,6 @@ License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
 Suggests: 
-    CVXR (>= 1.0-12),
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
 Imports: 
@@ -26,7 +25,8 @@ Imports:
     parallel ,
     foreach ,
     stats ,
-    rockchalk
+    rockchalk,
+    CVXR
 RoxygenNote: 7.3.2
 URL: https://github.com/yc702/EBalGen
 BugReports: https://github.com/yc702/EBalGen/issues

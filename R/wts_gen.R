@@ -46,6 +46,7 @@
 #' @rdname ebal_wts
 #' @export
 #' @importFrom stats optim
+#' @import CVXR
 ebal_wts <- function(x, trt,H_vars,
                      target_moments = NULL,
                      H_add_intercept = TRUE,
@@ -151,11 +152,11 @@ ebal_wts <- function(x, trt,H_vars,
 
 
   } else{
-    if (!requireNamespace("CVXR", quietly = TRUE)) {
-      # rlang::abort(
-      #   "Package 'CVXR' must be installed when using approximate balancing.")
-      stop("Package 'CVXR' must be installed when using approximate balancing.")
-    }
+    # if (!requireNamespace("CVXR", quietly = TRUE)) {
+    #   # rlang::abort(
+    #   #   "Package 'CVXR' must be installed when using approximate balancing.")
+    #   stop("Package 'CVXR' must be installed when using approximate balancing.")
+    # }
 
     if (!("MOSEK" %in% CVXR::installed_solvers())) {
       # rlang::abort(
@@ -237,6 +238,7 @@ ebal_wts <- function(x, trt,H_vars,
 #' @rdname ebal_wts_simple
 #' @export
 #' @importFrom stats optim
+#' @import CVXR
 ebal_wts_simple <- function(x,target_moments = NULL,
                             H_add_intercept = TRUE,delta) {
   if (length(target_moments) > NCOL(x)){
@@ -283,11 +285,11 @@ ebal_wts_simple <- function(x,target_moments = NULL,
 
 
   } else {
-      if (!requireNamespace("CVXR", quietly = TRUE)) {
-        # rlang::abort(
-        #   "Package 'CVXR' must be installed when using approximate balancing.")
-        stop("Package 'CVXR' must be installed when using approximate balancing.")
-      }
+      # if (!requireNamespace("CVXR", quietly = TRUE)) {
+      #   # rlang::abort(
+      #   #   "Package 'CVXR' must be installed when using approximate balancing.")
+      #   stop("Package 'CVXR' must be installed when using approximate balancing.")
+      # }
 
       if (!("MOSEK" %in% CVXR::installed_solvers())) {
         # rlang::abort(
