@@ -50,8 +50,8 @@
 #' target_mean = c(0,0,0)
 #' target_sd=c(1,1,1)
 #' ## Get CI for this generalized ATE
-#' RPM_CI(x,y,trt,H_vars, target_mean, target_sd, num_sim=50,
-#' H_add_intercept = TRUE,cluster=1, set_seed=111)
+#' \dontrun{ RPM_CI(x,y,trt,H_vars, target_mean, target_sd, num_sim=50,
+#' H_add_intercept = TRUE,cluster=1, set_seed=111)}
 #'
 RPM_CI <- function(x,y,trt,H_vars,target_mean,
                    target_sd,num_sim,

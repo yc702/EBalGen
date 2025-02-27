@@ -80,9 +80,8 @@ ebal_ATE(x,y,trt,H_vars, target_moments = target_moments, H_add_intercept = TRUE
 delta = numeric(8)+0.1
 if (requireNamespace("CVXR", quietly = TRUE)) {
   library(dplyr)
-  if (!("MOSEK" \%in\% CVXR::installed_solvers())) {
-    stop("MOSEK solver is not installed. Please install MOSEK to use it with CVXR.")}
-  ebal_ATE(x,y,trt,H_vars, target_moments = target_moments, H_add_intercept = TRUE,delta)
+  if (("MOSEK" \%in\% CVXR::installed_solvers())) {
+  ebal_ATE(x,y,trt,H_vars, target_moments = target_moments, H_add_intercept = TRUE,delta)}
 
 }
 }
